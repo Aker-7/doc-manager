@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Facelet Title</title>
+    </h:head>
+    <h:body>
+
+        <h:form id="form">  
+            <p:growl id="message" showDetail="true" />  
+
+            <!--*********** Context Menu ***********-->
+            <p:contextMenu for="folderTree">  
+                <p:menuitem value="Rename Folder" update="folderPanel" oncomplete="folderDialog.show();" icon="ui-icon-plus"/>
+            </p:contextMenu> 
+
+            <!--*********** Folder Tree ***********-->
+            <p:tree style="border:none;" id="folderTree" value="#{folderManagedBean.root}" var="folder" selectionMode="single" selection="#{folderManagedBean.selectedNode}">  
+                <p:ajax event="select" update=":form:folderPanel"/>  
+                <p:treeNode expandedIcon="ui-icon-folder-open" collapsedIcon="ui-icon-folder-collapsed">  
+                    <h:outputText value="#{folder.name}" />  
+                </p:treeNode>  
+            </p:tree>  
+
+            <!--*********** Dialog Box ***********-->
+            <p:dialog header="Rename Folder" widgetVar="folderDialog" modal="true" resizable="false"  
+                      showEffect="clip" hideEffect="fold">  
+                <p:outputPanel id="folderPanel">  
+                    <h:panelGrid columns="2" cellpadding="4">  
+                        <h:outputText value="Folder Name:" />  
+                        <p:inputText value="#{folderManagedBean.selectedNode.data.name}"/> 
+                    </h:panelGrid>  
+                </p:outputPanel>
+            </p:dialog>  
+
+
+        </h:form>
+
+
+    </h:body>
+</html>
+
