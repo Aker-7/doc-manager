@@ -11,16 +11,186 @@
                 <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
                 <title>PrimeFaces</title>
             </f:facet>
+
+            <style>
+                
+                .ui-widget, .ui-widget .ui-widget {
+                    font-size: 90% !important;
+                }
+
+                .panelColumns td{
+                    vertical-align: top;
+                }
+                
+                /*Overwrite the wizard style*/
+                .wizard td{
+                    font-size: 1.2em !important;
+                }
+                
+                .wizard .ui-button, .ui-wizard-step-title{
+                    font-size: 1.1em !important;
+                }
+                
+            </style>
+
         </h:head>
 
         <h:body>
-            <h:form id="form">  
-                <p:tree id="folderTree" value="#{folderManagedBean.root}" var="folder">  
-                    <p:treeNode expandedIcon="ui-icon-folder-open" collapsedIcon="ui-icon-folder-collapsed">  
-                        <h:outputText value="#{folder.name}" />  
-                    </p:treeNode>  
-                </p:tree>  
-            </form>
+
+            <h:form id="fAdd">
+                <!--*********** BEGIN ADD Dialog Box ***********-->
+                <p:dialog header="New Folder" widgetVar="addFolderDialog" modal="true" resizable="false"  
+                          showEffect="clip" hideEffect="fold">  
+                    <p:ajax event="close" update="addFolderPanel" listener="#{folderManagedBean.initDialog()}"/> 
+                    <p:outputPanel id="addFolderPanel">  
+                        <p:message id="msgAddFolder" for="txAddFolder"/>  
+                        <h:panelGrid columns="2" cellpadding="4">  
+                            <h:outputText value="Folder Name: *" />  
+                            <p:inputText id="txAddFolder" value="#{folderManagedBean.newFolderName}" required="true" requiredMessage="The field folder name is required."/> 
+                            <p:commandButton icon="ui-icon-check" value="OK" update=":form:folderTree, addFolderPanel" oncomplete="handleDialogClose(xhr, status, args)" actionListener="#{folderManagedBean.addFolder}"/>
+                        </h:panelGrid>  
+                    </p:outputPanel>
+                </p:dialog>
+                <!--*********** END ADD Dialog Box ***********-->
+            </h:form>
+
+            <h:form id="fEdit">
+                <!--*********** BEGIN EDIT Dialog Box ***********-->
+                <p:dialog id="editFolderDialog" header="Rename Folder" widgetVar="editFolderDialog" modal="true" resizable="false"  
+                          showEffect="clip" hideEffect="fold">  
+                    <p:outputPanel id="editFolderPanel">  
+                        <p:message id="msgEditFolder" for="txEditFolder"/>  
+                        <h:panelGrid columns="2" cellpadding="4">
+                            <h:outputText value="Folder Name: *" />  
+                            <p:inputText id="txEditFolder" value="#{folderManagedBean.selectedNode.data.name}" required="true" requiredMessage="The field folder name is required."/> 
+                            <p:commandButton icon="ui-icon-check" value="OK" update=":form:folderTree, editFolderPanel" oncomplete="handleDialogClose(xhr, status, args)" actionListener="#{folderManagedBean.renameFolder}"/>
+                        </h:panelGrid>  
+                    </p:outputPanel>
+                </p:dialog>  
+                <!--*********** END EDIT Dialog Box ***********-->       
+            </h:form>
+
+            <h:form>
+                <!--*********** BEGIN DELETE Dialog Box ***********-->
+                <p:confirmDialog message="Do you really want to delete this folder and all its content?"  
+                                 header="Delete Folder" severity="alert" widgetVar="deleteDialog">
+                    <p:commandButton id="confirm" value="Yes" update=":form:folderTree" oncomplete="deleteDialog.hide()"  
+                                     actionListener="#{folderManagedBean.deleteFolder}" />  
+                    <p:commandButton id="decline" value="No" onclick="deleteDialog.hide()" type="button" />  
+                </p:confirmDialog>  
+                <!--*********** END DELETE Dialog Box ***********-->
+            </h:form>
+
+
+
+
+<h:form id="fUpload" enctype="multipart/form-data">
+    <!--*********** BEGIN UPLOAD DOCUMENT Dialog Box ***********-->
+    <p:dialog id="addDocumentDialog" header="Add Document" widgetVar="addDocumentDialog" modal="true" resizable="false"  
+              showEffect="clip" hideEffect="fold" width="600" height="320">  
+        <p:ajax event="close" listener="#{folderManagedBean.initWizard()}"/> 
+        <p:wizard id="wiz" widgetVar="wiz"   
+                  flowListener="#{folderManagedBean.onFlowProcess}" styleClass="wizard">
+            <p:tab id="fileUpload" title="Upload Document">
+
+                <p:panel>
+                    <p:messages id="msgFileUpload" showDetail="true"/>
+                    <p:fileUpload fileUploadListener="#{folderManagedBean.handleFileUpload}"  
+                                  update="msgFileUpload"
+                                  mode="advanced"   
+                                  sizeLimit="100000"   
+                                  allowTypes="/(\.|\/)(pdf)$/"/> 
+                </p:panel>
+            </p:tab>
+
+            <p:tab id="documentInfo" title="Document Info">
+                <p:panel>
+
+                    <p:message id="msgDocumentInfo" for="txDocumentName"/>  
+                    <h:panelGrid columns="2" cellpadding="4">
+                        <h:outputText value="File uploaded:" />  
+                        <h:outputText value="#{folderManagedBean.uploadedOriginalFileName}" />  
+
+                        <h:outputText value="Document Name: *" />  
+                        <p:inputText id="txDocumentName" value="#{folderManagedBean.newDocName}" required="true" requiredMessage="The field document name is required."/> 
+
+                        <h:outputText value="Remark:" />  
+                        <p:inputTextarea id="txRemark" rows="6" cols="33" value="#{folderManagedBean.newDocRemark}" />
+                        
+                        <h:outputText value="Document Date: *" />  
+                        <p:calendar value="#{folderManagedBean.dateDocument}" id="dateDocument" pattern="dd.MM.yyyy"/>  
+                    </h:panelGrid>  
+                    <p:commandButton action="#{folderManagedBean.saveDocument(actionEvent)}" value="Save" oncomplete="wiz.loadStep(wiz.cfg.steps[0], true);addDocumentDialog.hide();" update=":form:taDocuments" icon="ui-icon-check" />
+
+                </p:panel>                      
+            </p:tab>
+
+        </p:wizard>
+    </p:dialog>  
+    <!--*********** END BEGIN UPLOAD DOCUMENT Dialog Box ***********-->
+</h:form>
+
+
+
+            <h:form id="form">
+
+
+
+                <!--*********** BEGIN Context Menu ***********-->
+                <p:contextMenu for="folderTree">  
+                    <p:menuitem value="New Folder" oncomplete="addFolderDialog.show()" icon="ui-icon-plus"/>
+                    <p:menuitem value="Rename Folder" oncomplete="editFolderDialog.show();" icon="ui-icon-pencil"/>                    
+                    <p:menuitem value="Delete Folder" oncomplete="deleteDialog.show()" icon="ui-icon-trash"/>  
+                    <p:menuitem value="Add Document" oncomplete="addDocumentDialog.show()" icon="ui-icon-plus" update=":fUpload:addDocumentDialog"/>  <!-- The update attribute is necessary to reset the dialog -->
+                </p:contextMenu> 
+                <!--*********** END Context Menu ***********-->
+
+
+
+                <p:panelGrid styleClass="panelColumns" style="height:400px;" columns="2">   
+                    <p:column>
+                        <!--*********** BEGIN Folders Tree ***********-->
+                        <p:tree style="border:none;" id="folderTree" value="#{folderManagedBean.root}" var="folder" selectionMode="single" selection="#{folderManagedBean.selectedNode}">  
+                            <p:ajax event="select" update=":fEdit:editFolderPanel, :form:taDocuments" listener="#{folderManagedBean.onFolderSelect}"/>  
+                            <p:treeNode expandedIcon="ui-icon-folder-open" collapsedIcon="ui-icon-folder-collapsed">  
+                                <h:outputText value="#{folder.name}" />  
+                            </p:treeNode>  
+                        </p:tree>  
+                        <!--*********** END Folders Tree ***********-->
+                    </p:column>
+                    <p:column>
+                        <!--*********** BEGIN Documents Table ***********-->
+                        <p:dataTable id="taDocuments" value="#{folderManagedBean.documents}" var="document">
+
+                            <p:column style="width:400px;" headerText="Name">  
+                                <h:outputText value="#{document.name}" />  
+                            </p:column>  
+
+                            <p:column style="width:100px;" headerText="Date">  
+                                <h:outputText value="#{document.documentDate}">
+                                    <f:convertDateTime pattern="dd.MM.yyyy"/>
+                                </h:outputText>
+                            </p:column>  
+
+                        </p:dataTable>
+                        <!--*********** END Documents Table ***********-->
+                    </p:column>
+                </p:panelGrid>
+
+            </h:form>
+
+
+            <script type="text/javascript">  
+                function handleDialogClose(xhr, status, args) {  
+                    if(!args.validationFailed) {                         
+                        addFolderDialog.hide();
+                        editFolderDialog.hide();
+                    }  
+                }                             
+            </script>     
+
+
+
         </h:body>
 
     </f:view>

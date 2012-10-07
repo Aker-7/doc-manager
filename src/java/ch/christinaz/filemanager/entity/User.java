@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package ch.christinaz.filemanager.entity;
 
 import java.io.Serializable;
@@ -13,8 +9,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 
 /**
- *
- * @author cedric
+ * This class is a JPA entity that represent the table t_user. Users are 
+ * stored in this table and are used to securing the web application.
+ * @author Cédric Christinaz
  */
 @Entity
 @Table(name="t_user")

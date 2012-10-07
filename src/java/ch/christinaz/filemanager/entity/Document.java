@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package ch.christinaz.filemanager.entity;
 
 import java.io.Serializable;
@@ -18,8 +14,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 
 /**
- *
- * @author cedric
+ * This class is a JPA entity that represent the table t_document. This table
+ * stores the documents of the document manager. Documents are organized in folders.
+ * @author Cédric Christinaz
  */
 @Entity
 @Table(name="t_document")
@@ -46,7 +43,7 @@ public class Document implements Serializable {
     @Column(name="file_type")
     private String type;
     @Column(name="file_size")
-    private int size;
+    private long size;
     @Column(name="file_original_name")
     private String originalFilename;
     @Column(name="path")
@@ -115,11 +112,11 @@ public class Document implements Serializable {
         this.type = type;
     }
 
-    public int getSize() {
+    public long getSize() {
         return size;
     }
 
-    public void setSize(int size) {
+    public void setSize(long size) {
         this.size = size;
     }
 

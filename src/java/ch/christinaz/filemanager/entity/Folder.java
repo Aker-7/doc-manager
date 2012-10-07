@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package ch.christinaz.filemanager.entity;
 
 import java.io.Serializable;
@@ -22,8 +18,10 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 
 /**
- *
- * @author cedric
+ * This class is a JPA entity that represent the table t_folder. This table
+ * stores the folders of the document manager. One folder can have several sub
+ * folders but must have just one parent folder.
+ * @author Cédric Christinaz
  */
 @Entity
 @Table(name="t_folder")
@@ -124,6 +122,10 @@ public class Folder implements Serializable {
 
     public void setDocuments(List<Document> documents) {
         this.documents = documents;
+    }
+    
+    public void addDocument(Document document){
+        this.documents.add(document);
     }
 
     
