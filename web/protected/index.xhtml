@@ -13,7 +13,7 @@
             </f:facet>
 
             <style>
-                
+
                 .ui-widget, .ui-widget .ui-widget {
                     font-size: 90% !important;
                 }
@@ -21,16 +21,16 @@
                 .panelColumns td{
                     vertical-align: top;
                 }
-                
+
                 /*Overwrite the wizard style*/
                 .wizard td{
                     font-size: 1.2em !important;
                 }
-                
+
                 .wizard .ui-button, .ui-wizard-step-title{
                     font-size: 1.1em !important;
                 }
-                
+
             </style>
 
         </h:head>
@@ -71,64 +71,109 @@
             </h:form>
 
             <h:form>
-                <!--*********** BEGIN DELETE Dialog Box ***********-->
+                <!--*********** BEGIN DELETE Folder Dialog Box ***********-->
                 <p:confirmDialog message="Do you really want to delete this folder and all its content?"  
                                  header="Delete Folder" severity="alert" widgetVar="deleteDialog">
                     <p:commandButton id="confirm" value="Yes" update=":form:folderTree" oncomplete="deleteDialog.hide()"  
                                      actionListener="#{folderManagedBean.deleteFolder}" />  
                     <p:commandButton id="decline" value="No" onclick="deleteDialog.hide()" type="button" />  
                 </p:confirmDialog>  
-                <!--*********** END DELETE Dialog Box ***********-->
+                <!--*********** END DELETE Folder Dialog Box ***********-->
+            </h:form>
+
+            <h:form>
+                <!--*********** BEGIN DELETE Document Dialog Box ***********-->
+                <p:confirmDialog message="Do you really want to delete this document?"  
+                                 header="Delete Document" severity="alert" widgetVar="deleteDocDialog">
+                    <p:commandButton id="confirm" value="Yes" update=":form:taDocuments" oncomplete="deleteDocDialog.hide()"  
+                                     actionListener="#{folderManagedBean.deleteDocument}" />  
+                    <p:commandButton id="decline" value="No" onclick="deleteDocDialog.hide()" type="button" />  
+                </p:confirmDialog>  
+                <!--*********** END DELETE Document Dialog Box ***********-->
             </h:form>
 
 
 
 
-<h:form id="fUpload" enctype="multipart/form-data">
-    <!--*********** BEGIN UPLOAD DOCUMENT Dialog Box ***********-->
-    <p:dialog id="addDocumentDialog" header="Add Document" widgetVar="addDocumentDialog" modal="true" resizable="false"  
-              showEffect="clip" hideEffect="fold" width="600" height="320">  
-        <p:ajax event="close" listener="#{folderManagedBean.initWizard()}"/> 
-        <p:wizard id="wiz" widgetVar="wiz"   
-                  flowListener="#{folderManagedBean.onFlowProcess}" styleClass="wizard">
-            <p:tab id="fileUpload" title="Upload Document">
+            <h:form id="fUpload" enctype="multipart/form-data">
+                <!--*********** BEGIN UPLOAD DOCUMENT Dialog Box ***********-->
+                <p:dialog id="addDocumentDialog" header="Add Document" widgetVar="addDocumentDialog" modal="true" resizable="false"  
+                          showEffect="clip" hideEffect="fold" width="600" height="320">  
+                    <p:ajax event="close" listener="#{folderManagedBean.initWizard()}"/> 
+                    <p:wizard id="wiz" widgetVar="wiz"   
+                              flowListener="#{folderManagedBean.onFlowProcess}" styleClass="wizard">
+                        <p:tab id="fileUpload" title="Upload Document">
 
-                <p:panel>
-                    <p:messages id="msgFileUpload" showDetail="true"/>
-                    <p:fileUpload fileUploadListener="#{folderManagedBean.handleFileUpload}"  
-                                  update="msgFileUpload"
-                                  mode="advanced"   
-                                  sizeLimit="100000"   
-                                  allowTypes="/(\.|\/)(pdf)$/"/> 
-                </p:panel>
-            </p:tab>
+                            <p:panel>
+                                <p:messages id="msgFileUpload" showDetail="true"/>
+                                <p:fileUpload fileUploadListener="#{folderManagedBean.handleFileUpload}"  
+                                              update="msgFileUpload"
+                                              mode="advanced"   
+                                              sizeLimit="100000"   
+                                              allowTypes="/(\.|\/)(pdf)$/"/> 
+                            </p:panel>
+                        </p:tab>
 
-            <p:tab id="documentInfo" title="Document Info">
-                <p:panel>
+                        <p:tab id="documentInfo" title="Document Info">
+                            <p:panel>
 
-                    <p:message id="msgDocumentInfo" for="txDocumentName"/>  
-                    <h:panelGrid columns="2" cellpadding="4">
-                        <h:outputText value="File uploaded:" />  
-                        <h:outputText value="#{folderManagedBean.uploadedOriginalFileName}" />  
+                                <p:message id="msgDocumentInfo" for="txDocumentName"/>  
+                                <h:panelGrid columns="2" cellpadding="4">
+                                    <h:outputText value="File uploaded:" />  
+                                    <h:outputText value="#{folderManagedBean.uploadedOriginalFileName}" />  
 
-                        <h:outputText value="Document Name: *" />  
-                        <p:inputText id="txDocumentName" value="#{folderManagedBean.newDocName}" required="true" requiredMessage="The field document name is required."/> 
+                                    <h:outputText value="Document Name: *" />  
+                                    <p:inputText id="txDocumentName" value="#{folderManagedBean.newDocName}" required="true" requiredMessage="The field document name is required."/> 
 
-                        <h:outputText value="Remark:" />  
-                        <p:inputTextarea id="txRemark" rows="6" cols="33" value="#{folderManagedBean.newDocRemark}" />
-                        
-                        <h:outputText value="Document Date: *" />  
-                        <p:calendar value="#{folderManagedBean.dateDocument}" id="dateDocument" pattern="dd.MM.yyyy"/>  
-                    </h:panelGrid>  
-                    <p:commandButton action="#{folderManagedBean.saveDocument(actionEvent)}" value="Save" oncomplete="wiz.loadStep(wiz.cfg.steps[0], true);addDocumentDialog.hide();" update=":form:taDocuments" icon="ui-icon-check" />
+                                    <h:outputText value="Remark:" />  
+                                    <p:inputTextarea id="txRemark" rows="6" cols="33" value="#{folderManagedBean.newDocRemark}" />
 
-                </p:panel>                      
-            </p:tab>
+                                    <h:outputText value="Document Date: *" />  
+                                    <p:calendar value="#{folderManagedBean.dateDocument}" id="dateDocument" pattern="dd.MM.yyyy"/>  
+                                </h:panelGrid>  
+                                <p:commandButton action="#{folderManagedBean.saveDocument(actionEvent)}" value="Save" oncomplete="wiz.loadStep(wiz.cfg.steps[0], true);addDocumentDialog.hide();" update=":form:taDocuments" icon="ui-icon-check" />
 
-        </p:wizard>
-    </p:dialog>  
-    <!--*********** END BEGIN UPLOAD DOCUMENT Dialog Box ***********-->
-</h:form>
+                            </p:panel>                      
+                        </p:tab>
+
+                    </p:wizard>
+                </p:dialog>  
+                <!--*********** END UPLOAD DOCUMENT Dialog Box ***********-->
+            </h:form>
+
+            <h:form id="fEditDocument">
+                <!--*********** BEGIN EDIT DOCUMENT Dialog Box ***********-->
+                <p:dialog id="editFolderDialog" header="Edit Document" widgetVar="editDocumentDialog" modal="true" resizable="false" >
+                    <p:panel>
+
+                        <p:message id="msgDocumentInfo" for="txDocumentName"/>  
+                        <h:panelGrid id="panelEditDocument" columns="2" cellpadding="4">                  
+
+                            <h:outputText value="Document Name: *" />  
+                            <p:inputText id="txDocumentName" value="#{folderManagedBean.selectedDocument.name}" required="true" requiredMessage="The field document name is required."/> 
+
+                            <h:outputText value="Remark:" />  
+                            <p:inputTextarea id="txRemark" rows="6" cols="33" value="#{folderManagedBean.selectedDocument.remark}" />
+
+                            <h:outputText value="Document Date: *" />  
+                            <p:calendar value="#{folderManagedBean.selectedDocument.documentDate}" id="dateDocument" pattern="dd.MM.yyyy"/>  
+                        </h:panelGrid>  
+                        <p:commandButton action="#{folderManagedBean.updateDocument}" value="Save" oncomplete="editDocumentDialog.hide();" update=":form:taDocuments" icon="ui-icon-check" />
+
+                    </p:panel>  
+                </p:dialog>
+                <!--*********** END EDIT DOCUMENT Dialog Box ***********-->
+            </h:form>
+            
+            <h:form id="fPreviewDocument">
+                <!--*********** BEGIN PREVIEW DOCUMENT Dialog Box ***********-->
+                <p:dialog position="top" id="previewDocumentDialog" header="Preview Document" widgetVar="previewDocumentDialog" modal="true" draggable="false" resizable="false" >
+                    <p:panel id="panelPreviewDocument">
+                        <p:graphicImage value="#{folderManagedBean.docPreview}" />  
+                    </p:panel>  
+                </p:dialog>
+                <!--*********** END PREVIEW DOCUMENT Dialog Box ***********-->
+            </h:form>
 
 
 
@@ -160,17 +205,30 @@
                     </p:column>
                     <p:column>
                         <!--*********** BEGIN Documents Table ***********-->
-                        <p:dataTable id="taDocuments" value="#{folderManagedBean.documents}" var="document">
+                        <p:dataTable id="taDocuments" value="#{folderManagedBean.documents}" var="document" selection="#{folderManagedBean.selectedDocument}" selectionMode="single" rowKey="#{document.id}">
 
-                            <p:column style="width:400px;" headerText="Name">  
+                            <p:ajax event="rowDblselect" update=":fEditDocument:panelEditDocument" oncomplete="editDocumentDialog.show()" /> 
+
+                            <p:column style="vertical-align: middle;width:400px;" headerText="Name">  
                                 <h:outputText value="#{document.name}" />  
                             </p:column>  
 
-                            <p:column style="width:100px;" headerText="Date">  
+                            <p:column style="vertical-align: middle;width:100px;" headerText="Date">  
                                 <h:outputText value="#{document.documentDate}">
                                     <f:convertDateTime pattern="dd.MM.yyyy"/>
                                 </h:outputText>
                             </p:column>  
+
+                            <p:column>
+                                <p:commandButton id="buEditDoc" oncomplete="previewDocumentDialog.show()" update=":fPreviewDocument:panelPreviewDocument" action="#{folderManagedBean.previewDocument}" icon="ui-icon-search" title="Preview">  
+                                    <f:setPropertyActionListener value="#{document}" target="#{folderManagedBean.selectedDocument}" />  
+                                </p:commandButton>  
+                            </p:column>
+                            <p:column>
+                                <p:commandButton id="buDeleteDoc" oncomplete="deleteDocDialog.show()" icon="ui-icon-trash" title="Delete">  
+                                    <f:setPropertyActionListener value="#{document}" target="#{folderManagedBean.selectedDocument}" />  
+                                </p:commandButton>  
+                            </p:column>
 
                         </p:dataTable>
                         <!--*********** END Documents Table ***********-->
