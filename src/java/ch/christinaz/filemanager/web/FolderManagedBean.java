@@ -235,6 +235,24 @@ public class FolderManagedBean implements Serializable {
         }
         return new DefaultStreamedContent();
     }
+     /**
+     * This method returns the stream of the selected document.
+     * @return StreamedContent that contains the document to download.
+     */
+    public StreamedContent getDownloadDoc() {
+        String fullfilename = "";
+        if (selectedNode != null) {
+            fullfilename = documentBean.downloadDocument(selectedDocument);
+            try {
+                FileInputStream fis = new FileInputStream(fullfilename);
+                return new DefaultStreamedContent(fis);
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(FolderManagedBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+        return new DefaultStreamedContent();
+    }
 
     public void setDocPreview(String docPreview) {
         this.docPreview = docPreview;
@@ -295,7 +313,6 @@ public class FolderManagedBean implements Serializable {
         if (selectedDocument != null) {
             documentBean.deleteDocument(selectedDocument);
             documents.remove(selectedDocument);
-
         }
     }
 
@@ -349,7 +366,6 @@ public class FolderManagedBean implements Serializable {
      * @param actionEvent
      */
     public void updateDocument() {
-
         documentBean.updateDocument(this.selectedDocument);
     }
 
@@ -357,7 +373,6 @@ public class FolderManagedBean implements Serializable {
         if (selectedDocument != null) {
             this.docPreview = documentBean.previewDocument(selectedDocument);
         }
-
     }
 
     /**

@@ -224,6 +224,12 @@
                                     <f:setPropertyActionListener value="#{document}" target="#{folderManagedBean.selectedDocument}" />  
                                 </p:commandButton>  
                             </p:column>
+                             <p:column>
+                                 <p:commandButton id="buDownloadDoc" ajax="false" icon="ui-icon-disk" title="Download">  
+                                    <f:setPropertyActionListener value="#{document}" target="#{folderManagedBean.selectedDocument}" />  
+                                    <p:fileDownload value="#{folderManagedBean.downloadDoc}" />  
+                                </p:commandButton>  
+                            </p:column>
                             <p:column>
                                 <p:commandButton id="buDeleteDoc" oncomplete="deleteDocDialog.show()" icon="ui-icon-trash" title="Delete">  
                                     <f:setPropertyActionListener value="#{document}" target="#{folderManagedBean.selectedDocument}" />  

@@ -100,12 +100,21 @@ public class DocumentBean {
         Document toRemoved = em.merge(document);
         em.remove(toRemoved);
     }
+    
+    /**
+     * This method returns the full filename (path + file name).
+     * @param document  Document for which we want to return the full filename
+     * @return Full filename of the document
+     */
+    public String downloadDocument(Document document){
+        return DOCUMENT_DIR + document.getPath();
+    }
 
     /**
      * This methods converts the document to an image and returns the 
      * path of the image
      * @param document Document to convert to an image
-     * @return 
+     * @return Path of the generated image
      */
     public String previewDocument(Document document) {
 
@@ -116,30 +125,26 @@ public class DocumentBean {
             FileChannel channel = raf.getChannel();
             ByteBuffer buf = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
             PDFFile pdffile = new PDFFile(buf);
-            
-            int numPgs = pdffile.getNumPages();
-            for (int i = 0; i < numPgs; i++) {
-                
-                PDFPage page = pdffile.getPage(i);
+
+            if(pdffile.getNumPages() > 0){
+                //To keep it simple, I just convert the first page
+
+                PDFPage page = pdffile.getPage(0);
                 // get the width and height for the doc at the default zoom
                 Rectangle rect = new Rectangle(0, 0, (int) page.getBBox().getWidth(), (int) page.getBBox().getHeight());
-                     
+
                 Image img = page.getImage(rect.width, rect.height, // width & height
                     rect, // clip rect
                     null, // null for the ImageObserver
                     true, // fill background with white
                     true // block until drawing is done
                     );
-                
-                BufferedImage bImg = toBufferedImage(img);
-                File yourImageFile = new File(DOCUMENT_DIR+"page_" + i + ".png");
-                ImageIO.write(bImg, "png", yourImageFile);
-                
-               
-                
-            }
-             
 
+                BufferedImage bImg = toBufferedImage(img);
+                File yourImageFile = new File(DOCUMENT_DIR+ document.getPath() + ".png");
+                ImageIO.write(bImg, "png", yourImageFile);
+
+            }
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(DocumentBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -149,12 +154,12 @@ public class DocumentBean {
 
 
 
-        return DOCUMENT_DIR+"page_0.png";
+        return DOCUMENT_DIR+ document.getPath() + ".png";
 
 
     }
-    
-    
+
+
     /**
      * This method returns a buffered image with the contents of an image
      * @param image
